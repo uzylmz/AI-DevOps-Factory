@@ -1,14 +1,25 @@
 from agents.architect_agent.agent import analyze_project
-from agents.devops_agent.agent import generate_project_structure
+from agents.lead_agent.agent import execute_project_generation
 
 user_prompt = """
-Je veux une application Spring Boot avec PostgreSQL sur Azure
+Je souhaite créer une API Python.
+
+La base de données doit être PostgreSQL.
+
+Le déploiement doit se faire sur Azure.
+
+Je veux des tests Playwright et Pytest.
+
+Les environnements sont :
+- dev
+- test
+- prod
 """
 
 specification = analyze_project(user_prompt)
 
 print(specification.model_dump())
 
-project_path = generate_project_structure("demo-app")
+project_path = execute_project_generation(specification)
 
 print(f"Projet généré : {project_path}")
