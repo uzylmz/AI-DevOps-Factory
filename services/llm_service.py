@@ -1,22 +1,21 @@
-from openai import OpenAI
+import os
 
-client = OpenAI(
-    base_url="http://localhost:1234/v1",
-    api_key="lm-studio"
-)
+from dotenv import load_dotenv
+
+from services.azure_provider import ask_azure
+from services.lmstudio_provider import ask_lmstudio
+
+load_dotenv()
 
 
-def ask_llm(prompt: str):
+def ask_llm(prompt):
 
-    response = client.chat.completions.create(
-        model="qwen2.5-coder-7b-instruct",
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        temperature=0
+    provider = os.getenv(
+        "LLM_PROVIDER",
+        "lmstudio"
     )
 
-    return response.choices[0].message.content
+    if provider == "azure":
+        return ask_azure(prompt)
+
+    return ask_lmstudio(prompt)

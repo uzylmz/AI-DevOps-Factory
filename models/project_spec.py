@@ -3,9 +3,20 @@ from typing import List
 
 
 class ProjectSpec(BaseModel):
+
     project_name: str
-    backend: str
+
+    language: str
+    framework: str
+
     database: str
+    build_tool: str
+
     cloud: str
-    tests: List[str] = []
-    environments: List[str] = []
+
+    environments: List[str]
+
+    docker: bool = True
+    ci_cd: bool = True
+    kubernetes: bool = False
+    terraform: bool = False

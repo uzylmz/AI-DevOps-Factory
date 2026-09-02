@@ -12,8 +12,8 @@ def generate_documentation(spec):
     architecture_content = f"""
 # Architecture
 
-## Backend
-{spec.backend}
+## Language
+{spec.language}
 
 ## Database
 {spec.database}
@@ -42,9 +42,6 @@ docker-compose up -d
 
 {', '.join(spec.environments)}
 
-## Tests disponibles
-
-{', '.join(spec.tests)}
 """
 
     with open(os.path.join(docs_dir, "architecture.md"), "w") as f:

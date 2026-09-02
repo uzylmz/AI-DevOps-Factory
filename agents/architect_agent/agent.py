@@ -12,6 +12,7 @@ You are a DevOps Architect.
 Analyze the user request.
 
 Return ONLY valid JSON.
+Do not add explanations.
 
 Expected format:
 
@@ -20,8 +21,9 @@ Expected format:
     "backend": "",
     "database": "",
     "cloud": "",
-    "tests": [],
-    "environments": []
+    "environments": [],
+    "docker": true,
+    "ci_cd": true
 }}
 
 project_name must never be empty.
@@ -39,5 +41,13 @@ User request:
     response = response.strip()
 
     data = json.loads(response)
+
+    data["backend"] = data["backend"].lower()
+    data["database"] = data["database"].lower()
+    data["cloud"] = data["cloud"].lower()
+
+    if not data["project_name"]:
+        data["project_name"] = f"{data['backend']}-app"
+
 
     return ProjectSpec(**data)

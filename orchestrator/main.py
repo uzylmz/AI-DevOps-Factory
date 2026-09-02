@@ -1,25 +1,36 @@
-from agents.architect_agent.agent import analyze_project
-from agents.lead_agent.agent import execute_project_generation
+from services.project_spec_builder import (
+    build_project_spec_from_repository
+)
 
-user_prompt = """
-Je souhaite créer une API Python.
+from agents.lead_agent.agent import (
+    execute_project_generation
+)
 
-La base de données doit être PostgreSQL.
+from services.devops_gap_service import (
+    get_devops_gap_report
+)
 
-Le déploiement doit se faire sur Azure.
+project_path = r"C:\Users\Uzeyir.YILMAZ\Projets\LaToile"
 
-Je veux des tests Playwright et Pytest.
+specification = build_project_spec_from_repository(
+    project_path
+)
 
-Les environnements sont :
-- dev
-- test
-- prod
-"""
+target_path = project_path
 
-specification = analyze_project(user_prompt)
-
+print("ProjectSpec:")
 print(specification.model_dump())
 
-project_path = execute_project_generation(specification)
+gap_report = get_devops_gap_report(
+    project_path
+)
 
-print(f"Projet généré : {project_path}")
+print()
+print("=== GAP REPORT ===")
+print(gap_report)
+
+generated_project = execute_project_generation(
+    specification, gap_report, target_path
+)
+
+print(f"Projet généré : {generated_project}")
