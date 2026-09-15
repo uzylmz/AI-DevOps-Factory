@@ -2,21 +2,33 @@ from services.project_spec_builder import (
     build_project_spec_from_repository
 )
 
-from agents.lead_agent.agent import (
-    execute_project_generation
-)
-
 from services.devops_gap_service import (
     get_devops_gap_report
 )
 
-project_path = r"C:\Users\Uzeyir.YILMAZ\Projets\NodeDemo"
+from services.report_generator import (
+    generate_devops_report
+)
+
+from services.roadmap_generator import (
+    generate_devops_roadmap
+)
+
+from services.roadmap_report_generator import (
+    generate_roadmap_report
+)
+
+from agents.lead_agent.agent import (
+    execute_project_generation
+)
+
+project_path = r"C:\Users\Uzeyir.YILMAZ\Projets\SpringDemo"
+
+target_path = project_path
 
 specification = build_project_spec_from_repository(
     project_path
 )
-
-target_path = project_path
 
 print("ProjectSpec:")
 print(specification.model_dump())
@@ -29,8 +41,30 @@ print()
 print("=== GAP REPORT ===")
 print(gap_report)
 
-generated_project = execute_project_generation(
-    specification, gap_report, target_path
+assessment_report = generate_devops_report(
+    specification,
+    gap_report["assets"],
+    gap_report["gaps"]
 )
 
-print(f"Projet généré : {generated_project}")
+print(assessment_report)
+
+roadmap = generate_devops_roadmap(
+    gap_report["gaps"]
+)
+
+roadmap_report = generate_roadmap_report(
+    roadmap
+)
+
+print(roadmap_report)
+
+generated_project = execute_project_generation(
+    specification,
+    gap_report,
+    target_path
+)
+
+print(
+    f"Projet généré : {generated_project}"
+)
