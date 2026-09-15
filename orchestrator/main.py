@@ -22,6 +22,10 @@ from agents.lead_agent.agent import (
     execute_project_generation
 )
 
+from services.devops_consultant import (
+    generate_executive_summary
+)
+
 project_path = r"C:\Users\Uzeyir.YILMAZ\Projets\LaToile"
 
 target_path = project_path
@@ -58,6 +62,16 @@ roadmap_report = generate_roadmap_report(
 )
 
 print(roadmap_report)
+
+consultant_report = generate_executive_summary(
+    specification,
+    gap_report
+)
+
+print()
+print("=== DEVOPS CONSULTANT REPORT ===")
+print()
+print(consultant_report)
 
 generated_project = execute_project_generation(
     specification,
