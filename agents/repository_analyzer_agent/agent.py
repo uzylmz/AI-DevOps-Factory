@@ -46,10 +46,16 @@ def build_repository_context(project_path):
     context = ""
 
     files_to_analyze = [
-        "pom.xml",
-        "package.json",
-        "requirements.txt",
-        "README.md"
+    "README.md",
+    "requirements.txt",
+    "pyproject.toml",
+    "setup.py",
+    "Dockerfile",
+    "docker-compose.yml",
+    "pom.xml",
+    "application.properties",
+    "application.yml",
+    "package.json"
     ]
 
     for file_name in files_to_analyze:
@@ -69,19 +75,41 @@ def build_repository_context(project_path):
 
     return context
 
-def analyze_stack_with_llm(context):
+import json
+
+
+def analyze_stack_with_llm(context: str):
 
     prompt = f"""
-Analyze this software project.
+You are a software repository and DevOps analyst.
 
-Return ONLY valid JSON.
+Analyze the repository content and identify:
+
+- language
+- framework
+- database
+- build_tool
+
+Return ONLY one valid JSON object.
+
+Required format:
 
 {{
-    "language": "",
-    "framework": "",
-    "database": "",
-    "build_tool": ""
+    "language": "unknown",
+    "framework": "unknown",
+    "database": "unknown",
+    "build_tool": "unknown"
 }}
+
+Rules:
+
+- Never return an empty response.
+- Never return empty string values.
+- Use "unknown" when information cannot be detected.
+- Do not add Markdown.
+- Do not add code fences.
+- Do not add explanations.
+- Do not add text before or after the JSON.
 
 Repository content:
 
@@ -90,19 +118,54 @@ Repository content:
 
     response = ask_llm(prompt)
 
-    response = response.replace(
-        "```json",
-        ""
-    )
-
-    response = response.replace(
-        "```",
-        ""
-    )
+    if response is None:
+        raise RuntimeError(
+            "Le LLM n'a retourné aucune réponse."
+        )
 
     response = response.strip()
 
-    return json.loads(response)
+    if not response:
+        raise RuntimeError(
+            "Le LLM a retourné une réponse vide."
+        )
+
+    print("\n=== RAW LLM RESPONSE ===")
+    print(response)
+    print("========================\n")
+
+    response = response.replace("```json", "")
+    response = response.replace("```JSON", "")
+    response = response.replace("```", "")
+    response = response.strip()
+
+    try:
+        data = json.loads(response)
+
+    except json.JSONDecodeError as error:
+        raise RuntimeError(
+            "La réponse du LLM n'est pas un JSON valide.\n"
+            f"Réponse reçue :\n{response}\n\n"
+            f"Erreur JSON : {error}"
+        ) from error
+
+    required_fields = [
+        "language",
+        "framework",
+        "database",
+        "build_tool"
+    ]
+
+    for field in required_fields:
+        value = data.get(field)
+
+        if value is None or str(value).strip() == "":
+            data[field] = "unknown"
+
+        elif isinstance(value, str):
+            data[field] = value.strip().lower()
+
+    return data
 
 def analyze_repository_with_llm(
         project_path

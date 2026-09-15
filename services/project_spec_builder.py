@@ -4,6 +4,11 @@ from agents.repository_analyzer_agent.agent import (
 
 from models.project_spec import ProjectSpec
 
+from agents.repository_analyzer_agent.existing_devops_detector import (
+    detect_existing_devops_assets
+)
+
+
 
 def build_project_spec_from_repository(
     project_path: str
@@ -33,16 +38,26 @@ def build_project_spec_from_repository(
         "unknown"
     ).lower()
 
+    assets = detect_existing_devops_assets(
+        project_path
+    )
+
+
     return ProjectSpec(
-        project_name=f"{language}-project",
-        language=language,
-        framework=framework,
-        database=database,
-        build_tool=build_tool,
-        cloud="unknown",
-        environments=["dev"],
-        docker=True,
-        ci_cd=True,
-        kubernetes=False,
-        terraform=False
+    project_name=f"{language}-project",
+    language=language,
+    framework=framework,
+    database=database,
+    build_tool=build_tool,
+    cloud="unknown",
+    environments=["dev"],
+
+    docker=True,
+    ci_cd=True,
+    kubernetes=False,
+    terraform=False,
+
+    docker_existing=assets["dockerfile"],
+    pipeline_existing=assets["azure_pipeline"],
+    gitignore_existing=assets["gitignore"]
     )

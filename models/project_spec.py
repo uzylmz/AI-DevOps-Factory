@@ -20,3 +20,9 @@ class ProjectSpec(BaseModel):
     ci_cd: bool = True
     kubernetes: bool = False
     terraform: bool = False
+
+    docker_existing: bool = False
+
+    pipeline_existing: bool = False
+
+    git_existing: bool = False

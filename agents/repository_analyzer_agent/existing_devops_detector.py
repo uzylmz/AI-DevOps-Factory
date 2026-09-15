@@ -26,5 +26,26 @@ def detect_existing_devops_assets(project_path):
 
         "gitignore": os.path.exists(
             os.path.join(project_path, ".gitignore")
+        ),
+
+        "github_actions": os.path.exists(
+            os.path.join(
+                project_path,
+                ".github",
+                "workflows"
+            )
+        ),
+
+        "kubernetes": os.path.exists(
+            os.path.join(
+                project_path,
+                "kubernetes"
+            )
+        ),
+
+        "terraform": any(
+            file.endswith(".tf")
+            for file in os.listdir(project_path)
         )
+
     }

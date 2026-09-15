@@ -47,3 +47,6 @@ cache/
 secrets/
 *.key
 *.pem
+
+# Local tests
+test*

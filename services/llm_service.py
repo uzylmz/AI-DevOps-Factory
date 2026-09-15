@@ -2,8 +2,13 @@ import os
 
 from dotenv import load_dotenv
 
-from services.azure_provider import ask_azure
-from services.lmstudio_provider import ask_lmstudio
+from services.lmstudio_provider import (
+    ask_lmstudio
+)
+
+from services.openrouter_provider import (
+    ask_openrouter
+)
 
 load_dotenv()
 
@@ -15,7 +20,7 @@ def ask_llm(prompt):
         "lmstudio"
     )
 
-    if provider == "azure":
-        return ask_azure(prompt)
+    if provider == "openrouter":
+        return ask_openrouter(prompt)
 
     return ask_lmstudio(prompt)

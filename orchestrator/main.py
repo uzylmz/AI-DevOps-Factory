@@ -10,7 +10,7 @@ from services.devops_gap_service import (
     get_devops_gap_report
 )
 
-project_path = r"C:\Users\Uzeyir.YILMAZ\Projets\LaToile"
+project_path = r"C:\Users\Uzeyir.YILMAZ\Projets\NodeDemo"
 
 specification = build_project_spec_from_repository(
     project_path
