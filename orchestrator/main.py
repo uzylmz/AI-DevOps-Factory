@@ -22,7 +22,7 @@ from agents.lead_agent.agent import (
     execute_project_generation
 )
 
-project_path = r"C:\Users\Uzeyir.YILMAZ\Projets\SpringDemo"
+project_path = r"C:\Users\Uzeyir.YILMAZ\Projets\LaToile"
 
 target_path = project_path
 

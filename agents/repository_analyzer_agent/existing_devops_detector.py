@@ -43,9 +43,22 @@ def detect_existing_devops_assets(project_path):
             )
         ),
 
-        "terraform": any(
-            file.endswith(".tf")
-            for file in os.listdir(project_path)
+        "terraform": has_terraform_files(
+            project_path
         )
 
     }
+
+import os
+
+
+def has_terraform_files(project_path):
+
+    for root, dirs, files in os.walk(project_path):
+
+        for file in files:
+
+            if file.endswith(".tf"):
+                return True
+
+    return False

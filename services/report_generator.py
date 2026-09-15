@@ -54,6 +54,15 @@ Azure Pipeline:
 GitIgnore:
 {"Present" if assets["gitignore"] else "Missing"}
 
+GitHub Actions:
+{"Present" if assets["github_actions"] else "Missing"}
+
+Kubernetes:
+{"Present" if assets["kubernetes"] else "Missing"}
+
+Terraform:
+{"Present" if assets["terraform"] else "Missing"}
+
 ----------------------------------
 DEVOPS MATURITY
 ----------------------------------
@@ -80,5 +89,14 @@ RECOMMENDATIONS
 
     if gaps["generate_readme"]:
         report += "\n- Generate README"
+
+    if not assets["kubernetes"]:
+        report += "\n- Evaluate Kubernetes deployment"
+
+    if not assets["terraform"]:
+        report += "\n- Evaluate Infrastructure as Code with Terraform"
+
+    if not assets["github_actions"]:
+        report += "\n- Add GitHub Actions workflow"
 
     return report
