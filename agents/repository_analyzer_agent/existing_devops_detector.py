@@ -248,3 +248,30 @@ def detect_existing_devops_assets(
             )
         )
     }
+
+def detect_primary_ci_cd_platform(
+    assets
+):
+
+    if assets["azure_pipeline"]:
+        return "azure_devops"
+
+    if assets["github_actions"]:
+        return "github_actions"
+
+    if assets["jenkins_pipeline"]:
+        return "jenkins"
+
+    if assets["gitlab_pipeline"]:
+        return "gitlab_ci"
+
+    return None
+
+def detect_delivery_method(
+    assets
+):
+
+    if assets["dockerfile"]:
+        return "container_image"
+
+    return "source_code"

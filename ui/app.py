@@ -382,6 +382,72 @@ if st.session_state.analysis_completed:
         )
     )
 
+    detected_platforms = assets.get(
+    "ci_cd_platforms",
+    []
+    )
+
+    detected_platform_labels = [
+        CI_CD_PLATFORM_DISPLAY_NAMES.get(
+            item,
+            item
+        )
+        for item in detected_platforms
+    ]
+
+    st.subheader(
+        "Detected Platform"
+    )
+
+    if detected_platform_labels:
+
+        st.success(
+            "Detected CI/CD Platform(s): "
+            + ", ".join(
+                detected_platform_labels
+            )
+        )
+
+    else:
+
+        st.warning(
+            "No CI/CD platform detected."
+        )
+
+    if assets.get(
+        "dockerfile",
+        False
+    ):
+
+        st.success(
+            "Detected Delivery Method: "
+            "Container Image"
+        )
+
+    else:
+
+        st.info(
+            "Detected Delivery Method: "
+            "Source Code"
+        )
+
+    if detected_platforms:
+
+        if platform in detected_platforms:
+
+            st.success(
+                f"Selected platform ({platform_label}) "
+                "matches the detected platform."
+            )
+
+        else:
+
+            st.warning(
+                f"Selected platform ({platform_label}) "
+                "differs from the detected platform(s): "
+                f"{', '.join(detected_platform_labels)}"
+            )
+
     st.divider()
 
     st.subheader("2. Project analysis")
