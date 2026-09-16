@@ -3,15 +3,58 @@ from services.devops_assessment import (
     get_maturity_level
 )
 
+from services.devops_options import (
+    CI_CD_PLATFORM_DISPLAY_NAMES,
+    CI_CD_PLATFORM_ASSET_KEYS,
+    DELIVERY_METHOD_DISPLAY_NAMES
+)
+
 
 def generate_devops_report(
     specification,
-    assets,
-    gaps
-):
+    gap_report: dict
+) -> str:
+
+    assets = gap_report["assets"]
+    gaps = gap_report["gaps"]
+
+    platform = gap_report[
+        "selected_ci_cd_platform"
+    ]
+
+    delivery_method = gap_report[
+        "selected_delivery_method"
+    ]
+
+    platform_label = (
+        CI_CD_PLATFORM_DISPLAY_NAMES.get(
+            platform,
+            platform
+        )
+    )
+
+    delivery_label = (
+        DELIVERY_METHOD_DISPLAY_NAMES.get(
+            delivery_method,
+            delivery_method
+        )
+    )
+
+    pipeline_asset_key = (
+        CI_CD_PLATFORM_ASSET_KEYS.get(
+            platform
+        )
+    )
+
+    pipeline_present = assets.get(
+        pipeline_asset_key,
+        False
+    )
 
     score = compute_devops_score(
-        assets
+        assets,
+        delivery_method,
+        platform
     )
 
     maturity = get_maturity_level(
@@ -38,31 +81,44 @@ Database:
 Build Tool:
 {specification.build_tool}
 
+CI/CD Platform:
+{platform_label}
+
+Delivery Method:
+{delivery_label}
+
 ----------------------------------
 DEVOPS ASSETS
 ----------------------------------
 
+README:
+{"Present" if assets["readme"] else "Missing"}
+
+GitIgnore:
+{"Present" if assets["gitignore"] else "Missing"}
+
+{platform_label} Pipeline:
+{"Present" if pipeline_present else "Missing"}
+"""
+
+    if delivery_method == "container_image":
+
+        report += f"""
 Dockerfile:
 {"Present" if assets["dockerfile"] else "Missing"}
 
 Docker Compose:
 {"Present" if assets["docker_compose"] else "Missing"}
+"""
 
-Azure Pipeline:
-{"Present" if assets["azure_pipeline"] else "Missing"}
+    else:
 
-GitIgnore:
-{"Present" if assets["gitignore"] else "Missing"}
+        report += """
+Containerization:
+Not required for the selected delivery method.
+"""
 
-GitHub Actions:
-{"Present" if assets["github_actions"] else "Missing"}
-
-Kubernetes:
-{"Present" if assets["kubernetes"] else "Missing"}
-
-Terraform:
-{"Present" if assets["terraform"] else "Missing"}
-
+    report += f"""
 ----------------------------------
 DEVOPS MATURITY
 ----------------------------------
@@ -78,25 +134,48 @@ RECOMMENDATIONS
 ----------------------------------
 """
 
-    if gaps["generate_dockerfile"]:
-        report += "\n- Generate Dockerfile"
-
-    if gaps["generate_docker_compose"]:
-        report += "\n- Generate docker-compose.yml"
+    recommendations = []
 
     if gaps["generate_pipeline"]:
-        report += "\n- Generate Azure Pipeline"
+
+        recommendations.append(
+            f"Generate {platform_label} pipeline"
+        )
+
+    if gaps["generate_dockerfile"]:
+
+        recommendations.append(
+            "Generate Dockerfile"
+        )
+
+    if gaps["generate_docker_compose"]:
+
+        recommendations.append(
+            "Generate docker-compose.yml"
+        )
 
     if gaps["generate_readme"]:
-        report += "\n- Generate README"
 
-    if not assets["kubernetes"]:
-        report += "\n- Evaluate Kubernetes deployment"
+        recommendations.append(
+            "Generate README"
+        )
 
-    if not assets["terraform"]:
-        report += "\n- Evaluate Infrastructure as Code with Terraform"
+    if gaps["generate_gitignore"]:
 
-    if not assets["github_actions"]:
-        report += "\n- Add GitHub Actions workflow"
+        recommendations.append(
+            "Generate .gitignore"
+        )
 
-    return report
+    if not recommendations:
+
+        recommendations.append(
+            "No basic DevOps remediation is required"
+        )
+
+    for recommendation in recommendations:
+
+        report += (
+            f"\n- {recommendation}"
+        )
+
+    return report.strip()
