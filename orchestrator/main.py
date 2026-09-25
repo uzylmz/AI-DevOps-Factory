@@ -28,13 +28,13 @@ from agents.lead_agent.agent import (
 
 
 project_path = (
-    r"C:\Users\Uzeyir.YILMAZ"
-    r"\Projets\LaToile"
+    r""
+    r""
 )
 
-target_ci_cd_platform = "jenkins"
+target_ci_cd_platform = ""
 
-delivery_method = "source_code"
+delivery_method = ""
 
 
 specification = (
